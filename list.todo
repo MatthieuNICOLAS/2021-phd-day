@@ -1,0 +1,22 @@
+Context:
+    ✔ Remplacer l'animation introduisant les CRDTs par une slide de définition @done (4/20/2020, 3:10:20 PM)
+    ✘ Remonter les slides présentant LogootSplit dans le contexte pour guider jusqu'à la problématique @cancelled (4/15/2020, 2:07:27 PM)
+        - Pas convaincu finalement
+        - Je trouve bien le plan actuel avec juste un contexte rapide qui pose la problématique
+        - Puis du background qui détaille un peu plus l'origine du problème
+        - Et qui mène jusqu'à l'approche proposée
+Background:
+    ✔ Mettre à jour les figures et les slides pour uniformiser le formalisme et les exemples avec le papier @done (4/20/2020, 3:10:23 PM)
+RLS:
+    ✔ Mettre à jour les figures et les slides pour uniformiser le formalisme et les exemples avec le papier @done (4/20/2020, 3:10:25 PM)
+        - Peut en profiter notamment pour faire l'animation permettant de dérouler le scénario complet illustrant l'inconsistence engendrer en appliquant naïvement les opérations concurrentes aux rename operations, le système d'epoch et la transformation
+Wrap up:
+    ✔ Revoir la slide, notamment les parties WIP et Todo @done (4/20/2020, 3:10:28 PM)
+        - P-e se focaliser sur ce qui concerne RLS sur cette slide
+    ✘ Ajouter une slide Future work plus global @cancelled (4/20/2020, 3:10:31 PM)
+        - Mentionnant par exemple l'étude de l'utilisation d'OT au sein de CRDTs pour construire des types plus complexes
+        - Mais il n'y aurait que ça
+        - Ça vaut le coup ou moyen de le caser ailleurs ?
+        - Plutôt ajouté à la slide "To wrap up"
+    ✘ Donner l'intuition de comment on gère les renommages concurrents, si le temps le permet @cancelled (4/20/2020, 3:10:35 PM)
+        - Pas le temps finalement
