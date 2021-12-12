@@ -348,8 +348,14 @@
   \end{figure}
   \vspace{-3mm}
   \begin{itemize}
-    \item<2-> Define total order on epochs to select {\color{red} target epoch}
-    \item<3> Design transformation function to revert \emph{rename} operation
+    \item<2-> Have to pick an epoch as the {\color{red} target one}
+    \begin{itemize}
+      \item<2-> Define total order on epochs
+    \end{itemize}
+    \item<3> Have to move through the tree
+    \begin{itemize}
+      \item<3> Design transformation function to revert \emph{rename} operation
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -489,7 +495,7 @@
   \end{table}
 
   \begin{itemize}
-    \item<2-> Noticeable by users if delayed too much
+    \item<2-> Noticeable by users
     \item<3> Need to improve remote integration time
   \end{itemize}
 \end{frame}
@@ -498,8 +504,8 @@
   \begin{block}{Done}
     \vspace{-1mm}
     \begin{itemize}
-      \item Designed a \emph{rename} operation for LogootSplit
-      \item Compared its performance to one of LogootSplit
+      \item Designed a new Sequence \ac{CRDT} : RenamableLogootSplit
+      \item Validated it through experimental evaluation
     \end{itemize}
   \end{block}
 
