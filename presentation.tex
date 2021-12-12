@@ -5,6 +5,7 @@
 
 \usepackage{acronym} % \ac[p], \acl[p], \acs[p], \acf[p]
 \usepackage{appendixnumberbeamer}
+\usepackage{booktabs} % \toprule, \midrule, \cmidrule, \bottomrule
 \usepackage[scale=2]{ccicons}
 \usepackage{subcaption} % subfigure
 \usepackage[absolute, overlay]{textpos}
@@ -290,98 +291,21 @@
 \begin{frame}{Handling concurrent operations}
   \begin{figure}
     \centering
-    \resizebox{\columnwidth}{!}{%
-      \begin{tikzpicture}
-          \path
-              node {\textbf{A}}
-              to ++(0:\widthletter) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-              to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-              to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0A-right) {LO}
-              to ++(0:5 * \widthletter) node[block, fill=mydarkblue,
-                      label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
-                          ] (S1A) {HELO}
-              to ++(0:8 * \widthletter) node[invisible, block, fill=mydarkblue,
-                      label={[invisible]below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
-                          ] (S2A-left) {HELO}
-              to ++(0:\widthblock) node[invisible, letter, fill=mylightorange, cross,
-                      label={[invisible] above:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} }
-                          ] {L};
-
-          \path
-              to ++(270:2) node {\textbf{B}}
-              to ++(0:\widthletter) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-              to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-              to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0B-right) {LO}
-              to ++(0:5 * \widthletter) node[invisible, letter, label={[invisible] below:{\id{i}{B0}{0}}}] (S1B-left) {H}
-              to ++(0:\widthletter) node[invisible, letter, fill=mydarkorange, label={[invisible] above:{ \color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}}] {E}
-              to ++(0:\widthletter) node[invisible, letter, fill=mylightorange, label={[invisible] below:{ \color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}}] {L}
-              to ++(0:\widthletter) node[invisible, block, label={[invisible] above:{\id{i}{B0}{1..2}}}] (S1B-right) {LO};
-
-
-          \draw[->, thick] (S0A-right) -- node[above, align=center]{\emph{rename}} (S1A);
-          \draw[invisible, dotted] (S1A) -- (S2A-left);
-          \draw[invisible, ->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
-          \draw[invisible, dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[below right, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
-
-      \end{tikzpicture}
-    }
-    \caption{Example of concurrent update}
-  \end{figure}
-  \vspace{-3mm}
-  \begin{itemize}
-    \item Can issue operations concurrently to \emph{rename}
-    \item Produce inconsistencies if applied naively
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Handling concurrent operations}
-  \begin{figure}
     \centering
-    \resizebox{\columnwidth}{!}{%
-      \begin{tikzpicture}
-          \path
-              node {\textbf{A}}
-              to ++(0:\widthletter) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-              to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-              to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0A-right) {LO}
-              to ++(0:5 * \widthletter) node[block, fill=mydarkblue,
-                      label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
-                          ] (S1A) {HELO}
-              to ++(0:8 * \widthletter) node[invisible, block, fill=mydarkblue,
-                      label={[invisible]below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
-                          ] (S2A-left) {HELO}
-              to ++(0:\widthblock) node[invisible, letter, fill=mylightorange, cross,
-                      label={[invisible] above:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} }
-                          ] {L};
-
-          \path
-              to ++(270:2) node {\textbf{B}}
-              to ++(0:\widthletter) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-              to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-              to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0B-right) {LO}
-              to ++(0:5 * \widthletter) node[letter, label={below:{\id{i}{B0}{0}}}] (S1B-left) {H}
-              to ++(0:\widthletter) node[letter, fill=mydarkorange, label={above:{ \color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}}] {E}
-              to ++(0:\widthletter) node[letter, fill=mylightorange, label={ below:{ \color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}}] {L}
-              to ++(0:\widthletter) node[block, label={ above:{\id{i}{B0}{1..2}}}] (S1B-right) {LO};
-
-
-          \draw[->, thick] (S0A-right) -- node[above, align=center]{\emph{rename}} (S1A);
-          \draw[invisible, dotted] (S1A) -- (S2A-left);
-          \draw[->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
-          \draw[invisible, dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[below right, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
-
-      \end{tikzpicture}
-    }
-    \caption{Example of concurrent update}
+    \includegraphics<1>[width=\columnwidth]{../2021-phd-day-figures/inconsistency-concurrent-op-to-rename/1/figure.pdf}
+    \includegraphics<2>[width=\columnwidth]{../2021-phd-day-figures/inconsistency-concurrent-op-to-rename/2/figure.pdf}
+    \includegraphics<3>[width=\columnwidth]{../2021-phd-day-figures/inconsistency-concurrent-op-to-rename/3/figure.pdf}
+    \includegraphics<4>[width=\columnwidth]{../2021-phd-day-figures/inconsistency-concurrent-op-to-rename/4/figure.pdf}
+    \caption{Applying naively concurrent update}
   \end{figure}
   \vspace{-3mm}
   \begin{itemize}
-    \item Can issue operations concurrently to \emph{rename}
-    \item Produce inconsistencies if applied naively
+    \item <2->Can issue operations concurrently to \emph{rename}
+    \item <4>Produce inconsistencies if applied naively
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Handling concurrent operations}
+\begin{frame}{Fixing handling concurrent operations}
   \begin{figure}
     \centering
     \resizebox{\columnwidth}{!}{%
@@ -427,7 +351,7 @@
 
     \end{tikzpicture}
     }
-    \caption{Example of concurrent update}
+    \caption{Handling properly concurrent update}
   \end{figure}
   \vspace{-3mm}
   \begin{itemize}
@@ -518,6 +442,15 @@
 %     \end{itemize}
 % \end{frame}
 
+\begin{frame}{Scenario}
+  \begin{itemize}
+    \item Simulate collaborative editing sessions using either LogootSplit or RenamableLogootSplit
+    \item \textbf{Phase 1 (content generation):} 80/20\% of \emph{insert}/\emph{remove}
+    \item \textbf{Phase 2 (editing):} 50/50\% of \emph{insert}/\emph{remove}
+    \item Nodes switch to phase 2 when document reaches critical size (15 pages - 60k elements)
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Results - Convergence}
   \begin{itemize}
     \item Compared final content of nodes per sessions
@@ -529,12 +462,6 @@
 \end{frame}
 
 \begin{frame}{Results - Memory footprint}
-  \begin{itemize}
-    \item \textbf{Phase 1 (content generation):} 80/20\% of \emph{insert}/\emph{remove}
-    \item \textbf{Phase 2 (editing):} 50/50\% of \emph{insert}/\emph{remove}
-    \item Nodes switch to phase 2 when document reaches critical size (15 pages - 60k elements)
-  \end{itemize}
-
   \begin{figure}
     \centering
     \only<1>{\hspace{-10mm}\includegraphics[width=0.61\textwidth]{img/snapshots-sizes-1.pdf}}
@@ -555,12 +482,12 @@
   \begin{figure}
     \captionsetup[subfigure]{aboveskip=-1pt,belowskip=-1pt}
     \centering
-    \begin{subfigure}{0.47\textwidth}
+    \begin{subfigure}{0.47\columnwidth}
         \includegraphics[width=1\textwidth]{img/integration-time-boxplot-local-operations-without-outliers.pdf}
         \caption{Local operations}
         \label{fig:evolution-integration-time-local-insert-remove}
     \end{subfigure}
-    \begin{subfigure}{0.47\textwidth}
+    \begin{subfigure}{0.47\columnwidth}
         \includegraphics[width=1\textwidth]{img/integration-time-boxplot-remote-operations-without-outliers.pdf}
         \caption{Remote operations}
         \label{fig:evolution-integration-time-remote-insert-remove}
@@ -571,27 +498,39 @@
 
   \vspace{-1\baselineskip}
   \begin{itemize}
-    \item \emph{Rename} resets integration times of future operations
-    \item Transforming concurrent operations is actually faster than applying them on former state
+    \item<2-> \emph{Rename} reduces integration times of future operations
+    \item<3> Transforming concurrent operations is actually faster than applying them on former state
   \end{itemize}
 
 \end{frame}
 
 \begin{frame}{Results - Integration time of \emph{rename} operations}
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.6\textwidth]{img/integration-time-rename.pdf}
-    \caption{Evolution of the integration time of \emph{rename} operations}
-    \label{fig:evolution-integration-time-rename}
-  \end{figure}
+  \begin{table}[!ht]
+      \centering
+      \resizebox{\columnwidth}{!}{
+          \begin{tabular}{lrrrrr}
+              \toprule
+              \multicolumn{2}{c}{Parameters} & \multicolumn{4}{c}{Integration Time (ms)} \\
+              \cmidrule(lr){1-2} \cmidrule(lr){3-6}
+              Type & Nb Ops (k) &   Mean &   Median & 99\textsuperscript{th} Quant. &    Std \\
+              \midrule
+              Local & 30  &    41.75 &    38.74 &      71.68 &   6.84 \\
+                                      & 90  &   119.19 &   118.87 &     124.22 &   2.49 \\
+                                      & 150 &   158.04 &   157.95 &     164.38 &   2.49 \\
+              \cmidrule(lr){1-6}
+              Remote & 30  &   481.32 &   477.13 &     537.30 &  17.11 \\
+                                      & 90  &  1491.28 &  1481.83 &    1657.58 &  51.10 \\
+                                      & 150 &  1694.17 &  1675.95 &    1852.55 &  59.94 \\
+              \bottomrule
+          \end{tabular}
+      }
+      \caption{Integration time of rename operations}
+  \end{table}
 
-  \vspace{-1\baselineskip}
   \begin{itemize}
-    \item Noticeable by users if delayed too much
+    \item<2-> Noticeable by users if delayed too much
+    \item<3> Need to improve remote integration time
   \end{itemize}
-
-  \centering
-  \alert{Research trail: propose strategies to retain acceptable integration time for \emph{rename} operations}
 \end{frame}
 
 \begin{frame}{Conclusion}
@@ -697,6 +636,38 @@
       \item How to minimise the overall computations?
     \end{itemize}
   \end{block}
+\end{frame}
+
+\begin{frame}{Results - Integration time of \emph{rename} operations (complete)}
+  \begin{table}[!ht]
+      \centering
+      \resizebox{\columnwidth}{!}{
+          \begin{tabular}{lrrrrr}
+              \toprule
+              \multicolumn{2}{c}{Parameters} & \multicolumn{4}{c}{Integration Time (ms)} \\
+              \cmidrule(lr){1-2} \cmidrule(lr){3-6}
+              Type & Nb Ops (k) &   Mean &   Median & 99\textsuperscript{th} Quant. &    Std \\
+              \midrule
+              Local & 30  &    41.75 &    38.74 &      71.68 &   6.84 \\
+                                      & 90  &   119.19 &   118.87 &     124.22 &   2.49 \\
+                                      & 150 &   158.04 &   157.95 &     164.38 &   2.49 \\
+              \cmidrule(lr){1-6}
+              Direct remote & 30  &   481.32 &   477.13 &     537.30 &  17.11 \\
+                                      & 90  &  1491.28 &  1481.83 &    1657.58 &  51.10 \\
+                                      & 150 &  1694.17 &  1675.95 &    1852.55 &  59.94 \\
+              \cmidrule(lr){1-6}
+              Cc. int. greater epoch & 30  &   643.53 &   643.57 &     682.80 &  13.42 \\
+                                      & 90  &  1998.23 &  1994.08 &    2111.98 &  45.37 \\
+                                      & 150 &  2241.92 &  2233.61 &    2351.02 &  52.20 \\
+              \cmidrule(lr){1-6}
+              Cc. int. lesser epoch & 30  &     1.36 &     1.30 &       3.53 &   0.37 \\
+                                      & 90  &     4.45 &     4.23 &       5.81 &   0.71 \\
+                                      & 150 &     5.53 &     5.26 &       8.70 &   0.79 \\
+              \bottomrule
+          \end{tabular}
+      }
+      \caption{Integration time of rename operations}
+  \end{table}
 \end{frame}
 
 \begin{frame}{Experimental settings}
