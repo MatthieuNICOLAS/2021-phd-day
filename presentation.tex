@@ -87,7 +87,7 @@
                 (path picture bounding box.south west)--(path picture bounding box.north east);
         }
     },
-    invisible/.style={opacity=0,text opacity=0},
+    invisible/.style={opacity=0},
     visible on/.style={alt=#1{}{invisible}},
     alt/.code args={<#1>#2#3}{%
       \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
@@ -503,95 +503,29 @@
 \begin{frame}{How to do so ?}
   \begin{figure}
     \centering
-    \begin{tikzpicture}
-        \path
-            node[op] (e0) {\epoch{0}}
-            to ++(270:1.5)
-            to ++(180:0.95) node[op] (eA1) {\epoch{A1}};
-        \path
-            to ++(270:1.5)
-            to ++(0:0.95) node[op] (eB2) {\epoch{B2}};
-
-        \draw[thick, ->] (e0) -- (eA1);
-        \draw[thick, ->] (e0) -- (eB2);
-    \end{tikzpicture}
-    \caption{\emph{Epoch tree} corresponding to previous scenario}
-  \end{figure}
-  \vspace{-3mm}
-\end{frame}
-
-\begin{frame}{How to do so ?}
-  \begin{figure}
-    \centering
-    \begin{tikzpicture}
-        \path
-            node[op] (e0) {\epoch{0}}
-            to ++(270:1.5)
-            to ++(180:0.95) node[op] (eA1) {\epoch{A1}};
-        \path
-            to ++(270:1.5)
-            to ++(0:0.95) node[op, red] (eB2) {\epoch{B2}};
-
-        \draw[thick, ->] (e0) -- (eA1);
-        \draw[thick, ->] (e0) -- (eB2);
-        \draw[->, dashed, thick, red] (eB2.180) -- (eA1.0) (eA1.25) -- (e0.270);
-    \end{tikzpicture}
+    \includegraphics<1>[width=0.3\columnwidth]{../2021-phd-day-figures/epoch-tree/1/figure.pdf}
+    \includegraphics<2->[width=0.3\columnwidth]{../2021-phd-day-figures/epoch-tree/2/figure.pdf}
     \caption{\emph{Epoch tree} corresponding to previous scenario}
   \end{figure}
   \vspace{-3mm}
   \begin{itemize}
-    \item<1-> Define total order on epochs to select target epoch
-    \item<2> Design transformation function to revert \emph{rename} operation
+    \item<2-> Define total order on epochs to select {\color{red} target epoch}
+    \item<3> Design transformation function to revert \emph{rename} operation
   \end{itemize}
 \end{frame}
 
-\begin{frame}{What about concurrent \emph{rename} operations ?}
+\begin{frame}{Applying concurrent \emph{rename} operations}
   \begin{figure}
     \centering
-    \resizebox{\columnwidth}{!}{%
-    \begin{tikzpicture}
-        \path
-            node {\textbf{A}}
-            to ++(0:0.5 * \widthletter) node[epoch] (S2A-left) {\epoch{A1}}
-            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
-                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..1}} }
-                        ] {HE}
-            to ++(0:\widthblock) node[letter, fill=mylightblue,
-                    label={above:{\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}} }
-                        ] {L}
-            to ++(0:\widthletter) node[block, fill=mydarkblue,
-                    label={below:{\color{mydarkblueid}\id{i}{A1}{2..3}} }
-                        ] (S2A-right) {LO}
-            to ++(0:2 * \widthblock) node[point] (between-S2A-S3A) {}
-            to ++(0:3 * \widthletter) node[epoch] (S3A-left) {\epoch{0}}
-            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-            to ++(0:\widthletter) node[letter, fill=mylightorange, label=below:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}] {L}
-            to ++(0:\widthletter) node[block, label=above:{\id{i}{B0}{1..2}}] (S3A-right) {LO}
-            to ++ (0:3 * \widthblock) node[epoch] (S4A-left) {\epoch{B2}}
-            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkpurple,
-                    label={ [] below:{\color{mydarkpurpleid}\id{i}{B2}{0..4}} }
-                ] {HELLO};
-
-        \path
-            to ++(270:3) node {\textbf{B}}
-            to ++(0:0.5 * \widthletter) node[epoch] (S2B-left) {\epoch{B2}}
-            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkpurple,
-                label={ [] below:{\color{mydarkpurpleid}\id{i}{B2}{0..4}} }
-            ] (S2B-right) {HELLO};
-
-        \draw[dotted] (S2A-right) -- (between-S2A-S3A) (S3A-right) -- (S4A-left);
-        \draw[->, dashed, thick] (S2B-right.east) -- node[right, xshift=5pt, align=center]{\emph{rename to \epoch{B2}}} (between-S2A-S3A);
-        \draw[->, loosely dash dot, thick, shorten >= 1] (between-S2A-S3A) -- node[above, align=center]{\emph{revert to \epoch{0}}} (S3A-left);
-        \draw[->, dashed, thick, shorten >= 3] (between-S2A-S3A) edge[bend right] (S4A-left.west);
-    \end{tikzpicture}
-    }
-    \caption{Concurrent \emph{rename} operations leading to divergent states}
+    \includegraphics<1>[width=\columnwidth]{../2021-phd-day-figures/resolving-concurrent-rename/1/figure.pdf}
+    \includegraphics<2>[width=\columnwidth]{../2021-phd-day-figures/resolving-concurrent-rename/2/figure.pdf}
+    \includegraphics<3>[width=\columnwidth]{../2021-phd-day-figures/resolving-concurrent-rename/3/figure.pdf}
+    \caption{Applying a concurrent \emph{rename} operation}
   \end{figure}
   \vspace{-3mm}
   \begin{itemize}
-    \item Revert state to equivalent one at LCA epoch
-    \item Apply then \emph{rename} operations leading to target epoch
+    \item<2-> Revert state to equivalent one at LCA epoch
+    \item<3> Apply then \emph{rename} operations leading to target epoch
   \end{itemize}
 \end{frame}
 
