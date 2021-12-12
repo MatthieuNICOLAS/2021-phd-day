@@ -518,9 +518,30 @@
     \caption{\emph{Epoch tree} corresponding to previous scenario}
   \end{figure}
   \vspace{-3mm}
+\end{frame}
+
+\begin{frame}{How to do so ?}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \path
+            node[op] (e0) {\epoch{0}}
+            to ++(270:1.5)
+            to ++(180:0.95) node[op] (eA1) {\epoch{A1}};
+        \path
+            to ++(270:1.5)
+            to ++(0:0.95) node[op, red] (eB2) {\epoch{B2}};
+
+        \draw[thick, ->] (e0) -- (eA1);
+        \draw[thick, ->] (e0) -- (eB2);
+        \draw[->, dashed, thick, red] (eB2.180) -- (eA1.0) (eA1.25) -- (e0.270);
+    \end{tikzpicture}
+    \caption{\emph{Epoch tree} corresponding to previous scenario}
+  \end{figure}
+  \vspace{-3mm}
   \begin{itemize}
-    \item Define total order on epochs to select target epoch
-    \item Design transformation function to revert \emph{rename} operation
+    \item<1-> Define total order on epochs to select target epoch
+    \item<2> Design transformation function to revert \emph{rename} operation
   \end{itemize}
 \end{frame}
 
