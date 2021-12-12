@@ -291,7 +291,6 @@
 \begin{frame}{Handling concurrent operations}
   \begin{figure}
     \centering
-    \centering
     \includegraphics<1>[width=\columnwidth]{../2021-phd-day-figures/inconsistency-concurrent-op-to-rename/1/figure.pdf}
     \includegraphics<2>[width=\columnwidth]{../2021-phd-day-figures/inconsistency-concurrent-op-to-rename/2/figure.pdf}
     \includegraphics<3>[width=\columnwidth]{../2021-phd-day-figures/inconsistency-concurrent-op-to-rename/3/figure.pdf}
@@ -308,55 +307,17 @@
 \begin{frame}{Fixing handling concurrent operations}
   \begin{figure}
     \centering
-    \resizebox{\columnwidth}{!}{%
-    \begin{tikzpicture}
-      \path
-          node {\textbf{A}}
-            to ++(0:0.5 * \widthletter) node[epoch] {\epoch{0}}
-            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-            to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0A-right) {LO}
-            to ++(0:5 * \widthletter) node[epoch] (S1A-left) {\epoch{A1}}
-            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
-                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
-                        ] (S1A-right) {HELO}
-            to ++(0:8 * \widthletter) node[epoch] (S2A-left) {\epoch{A1}}
-            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
-                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..1}} }
-                        ] {HE}
-            to ++(0:\widthblock) node[letter, fill=mylightblue,
-                    label={above:{\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}} }
-                        ] {L}
-            to ++(0:\widthletter) node[block, fill=mydarkblue,
-                    label={below:{\color{mydarkblueid}\id{i}{A1}{2..3}} }
-                        ] {LO};
-
-        \path
-            to ++(270:2) node {\textbf{B}}
-            to ++(0:0.5 * \widthletter) node[epoch] {\epoch{0}}
-            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-            to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0B-right) {LO}
-            to ++(0:5 * \widthletter) node[epoch] (S1B-left) {\epoch{0}}
-            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
-            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-            to ++(0:\widthletter) node[letter, fill=mylightorange, label=below:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}] {L}
-            to ++(0:\widthletter) node[block, label=above:{\id{i}{B0}{1..2}}] (S1B-right) {LO};
-
-
-        \draw[->, thick] (S0A-right) -- node[above, align=center]{\emph{rename to \epoch{A1}}} (S1A-left);
-        \draw[dotted] (S1A-right) -- (S2A-left);
-        \draw[->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
-        \draw[dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[below right, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} $\to$ {\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
-
-    \end{tikzpicture}
-    }
+    \includegraphics<1>[width=\columnwidth]{../2021-phd-day-figures/handling-concurrent-op-to-rename/1/figure.pdf}
+    \includegraphics<2>[width=\columnwidth]{../2021-phd-day-figures/handling-concurrent-op-to-rename/2/figure.pdf}
+    \includegraphics<3>[width=\columnwidth]{../2021-phd-day-figures/handling-concurrent-op-to-rename/3/figure.pdf}
+    \includegraphics<4>[width=\columnwidth]{../2021-phd-day-figures/handling-concurrent-op-to-rename/4/figure.pdf}
+    \includegraphics<5>[width=\columnwidth]{../2021-phd-day-figures/handling-concurrent-op-to-rename/5/figure.pdf}
     \caption{Handling properly concurrent update}
   \end{figure}
   \vspace{-3mm}
   \begin{itemize}
-    \item Use \emph{epoch-based} system to track concurrent operations
-    \item Use transform operations against \emph{rename} ones (\emph{OT})
+    \item<1-> Use \emph{epoch-based} system to track concurrent operations
+    \item<4-> Use transform operations against \emph{rename} ones (\emph{OT})
   \end{itemize}
 \end{frame}
 
