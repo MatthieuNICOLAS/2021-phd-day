@@ -10,6 +10,8 @@
 \usepackage[absolute, overlay]{textpos}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes.misc}
 \usepackage{verbatim}
 
 \usepackage{transparent}
@@ -22,13 +24,16 @@
 \definecolor{pdflinkcolor}{rgb}{0,0,0}
 \definecolor{light}{gray}{.85}
 \definecolor{vlight}{gray}{.95}
-\definecolor{darkgreen}{rgb}{0.0, 0.2, 0.13}
+\definecolor{darkgreen}{RGB}{77,172,38}
+\definecolor{darkblue}{RGB}{5,113,176}
 \definecolor{mydarkblue}{RGB}{116,173,209}
 \definecolor{mydarkblueid}{RGB}{83,154,198}
 \definecolor{mylightblue}{RGB}{171,217,233}
 \definecolor{mydarkorange}{RGB}{244,109,67}
 \definecolor{mylightorange}{RGB}{252,153,54}
 \definecolor{mydarkred}{RGB}{215,48,39}
+\definecolor{mydarkpurple}{RGB}{140,107,177}
+\definecolor{mydarkpurpleid}{RGB}{136,86,167}
 }
 
 % Acronyms
@@ -37,7 +42,7 @@
 \acrodefplural{CRDT}[CRDTs]{Conflict-free Replicated Data Types}
 
 \author{
-  \textbf{Matthieu Nicolas} (\url{matthieu.nicolas@inria.fr}), Gérald Oster, Olivier Perrin
+  \textbf{Matthieu Nicolas} (\url{matthieu.nicolas@loria.fr}), Gérald Oster, Olivier Perrin
   \\
   COAST team
 }
@@ -59,15 +64,22 @@
 \renewcommand{\thefootnote}{[\arabic{footnote}]}
 \newcommand{\trm}[1]{\mathit{#1}}
 \newcommand{\id}[3]{$\trm{#1}^{\trm{#2}}_{\trm{#3}}$}
+\newcommand{\epoch}[1]{$\varepsilon_{#1}$}
 
-\newcommand{\widthletter}{7mm}
-\newcommand{\widthblock}{11mm}
+
+\newcommand{\widthletter}{2em}
+\newcommand{\widthblock}{3em}
+\newcommand{\widthoriginepoch}{1.65em}
+\newcommand{\widthepoch}{1.8em}
 
 % Tikz styles
 \tikzset{
     common/.style={anchor=west, draw, rectangle, minimum height=6mm},
     letter/.style={common, minimum width=\widthletter},
     block/.style={common, minimum width=\widthblock},
+    epoch/.style={letter, rounded rectangle, rounded rectangle east arc=0pt, minimum width=\widthepoch},
+    point/.style={insert path={ node[scale=5*sqrt(\pgflinewidth)]{.} }},
+    op/.style={draw, circle, minimum size=2.7em},
     cross/.style={
         path picture={
             \draw[mydarkred, very thick]
@@ -288,11 +300,11 @@
               to ++(0:5 * \widthletter) node[block, fill=mydarkblue,
                       label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
                           ] (S1A) {HELO}
-              to ++(0:8 * \widthletter) node[block, fill=mydarkblue,
-                      label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
+              to ++(0:8 * \widthletter) node[invisible, block, fill=mydarkblue,
+                      label={[invisible]below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
                           ] (S2A-left) {HELO}
-              to ++(0:\widthblock) node[letter, fill=mylightorange, cross,
-                      label={above:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} }
+              to ++(0:\widthblock) node[invisible, letter, fill=mylightorange, cross,
+                      label={[invisible] above:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} }
                           ] {L};
 
           \path
@@ -300,16 +312,16 @@
               to ++(0:\widthletter) node[letter, label=below:{\id{i}{B0}{0}}] {H}
               to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
               to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0B-right) {LO}
-              to ++(0:5 * \widthletter) node[letter, label=below:{\id{i}{B0}{0}}] (S1B-left) {H}
-              to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
-              to ++(0:\widthletter) node[letter, fill=mylightorange, label=below:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}] {L}
-              to ++(0:\widthletter) node[block, label=above:{\id{i}{B0}{1..2}}] (S1B-right) {LO};
+              to ++(0:5 * \widthletter) node[invisible, letter, label={[invisible] below:{\id{i}{B0}{0}}}] (S1B-left) {H}
+              to ++(0:\widthletter) node[invisible, letter, fill=mydarkorange, label={[invisible] above:{ \color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}}] {E}
+              to ++(0:\widthletter) node[invisible, letter, fill=mylightorange, label={[invisible] below:{ \color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}}] {L}
+              to ++(0:\widthletter) node[invisible, block, label={[invisible] above:{\id{i}{B0}{1..2}}}] (S1B-right) {LO};
 
 
           \draw[->, thick] (S0A-right) -- node[above, align=center]{\emph{rename}} (S1A);
-          \draw[dotted] (S1A) -- (S2A-left);
-          \draw[->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
-          \draw[dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[below right, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
+          \draw[invisible, dotted] (S1A) -- (S2A-left);
+          \draw[invisible, ->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
+          \draw[invisible, dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[below right, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
 
       \end{tikzpicture}
     }
@@ -317,8 +329,248 @@
   \end{figure}
   \vspace{-3mm}
   \begin{itemize}
-    \item<2-> Use \emph{epoch-based} system to track concurrent operations
-    \item<3-> Use rewriting rules to transform identifiers from one \emph{epoch} to another
+    \item Can issue operations concurrently to \emph{rename}
+    \item Produce inconsistencies if applied naively
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Handling concurrent operations}
+  \begin{figure}
+    \centering
+    \resizebox{\columnwidth}{!}{%
+      \begin{tikzpicture}
+          \path
+              node {\textbf{A}}
+              to ++(0:\widthletter) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+              to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+              to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0A-right) {LO}
+              to ++(0:5 * \widthletter) node[block, fill=mydarkblue,
+                      label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
+                          ] (S1A) {HELO}
+              to ++(0:8 * \widthletter) node[invisible, block, fill=mydarkblue,
+                      label={[invisible]below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
+                          ] (S2A-left) {HELO}
+              to ++(0:\widthblock) node[invisible, letter, fill=mylightorange, cross,
+                      label={[invisible] above:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} }
+                          ] {L};
+
+          \path
+              to ++(270:2) node {\textbf{B}}
+              to ++(0:\widthletter) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+              to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+              to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0B-right) {LO}
+              to ++(0:5 * \widthletter) node[letter, label={below:{\id{i}{B0}{0}}}] (S1B-left) {H}
+              to ++(0:\widthletter) node[letter, fill=mydarkorange, label={above:{ \color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}}] {E}
+              to ++(0:\widthletter) node[letter, fill=mylightorange, label={ below:{ \color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}}] {L}
+              to ++(0:\widthletter) node[block, label={ above:{\id{i}{B0}{1..2}}}] (S1B-right) {LO};
+
+
+          \draw[->, thick] (S0A-right) -- node[above, align=center]{\emph{rename}} (S1A);
+          \draw[invisible, dotted] (S1A) -- (S2A-left);
+          \draw[->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
+          \draw[invisible, dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[below right, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
+
+      \end{tikzpicture}
+    }
+    \caption{Example of concurrent update}
+  \end{figure}
+  \vspace{-3mm}
+  \begin{itemize}
+    \item Can issue operations concurrently to \emph{rename}
+    \item Produce inconsistencies if applied naively
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Handling concurrent operations}
+  \begin{figure}
+    \centering
+    \resizebox{\columnwidth}{!}{%
+    \begin{tikzpicture}
+      \path
+          node {\textbf{A}}
+            to ++(0:0.5 * \widthletter) node[epoch] {\epoch{0}}
+            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+            to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0A-right) {LO}
+            to ++(0:5 * \widthletter) node[epoch] (S1A-left) {\epoch{A1}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
+                        ] (S1A-right) {HELO}
+            to ++(0:8 * \widthletter) node[epoch] (S2A-left) {\epoch{A1}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..1}} }
+                        ] {HE}
+            to ++(0:\widthblock) node[letter, fill=mylightblue,
+                    label={above:{\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}} }
+                        ] {L}
+            to ++(0:\widthletter) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{2..3}} }
+                        ] {LO};
+
+        \path
+            to ++(270:2) node {\textbf{B}}
+            to ++(0:0.5 * \widthletter) node[epoch] {\epoch{0}}
+            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+            to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0B-right) {LO}
+            to ++(0:5 * \widthletter) node[epoch] (S1B-left) {\epoch{0}}
+            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+            to ++(0:\widthletter) node[letter, fill=mylightorange, label=below:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}] {L}
+            to ++(0:\widthletter) node[block, label=above:{\id{i}{B0}{1..2}}] (S1B-right) {LO};
+
+
+        \draw[->, thick] (S0A-right) -- node[above, align=center]{\emph{rename to \epoch{A1}}} (S1A-left);
+        \draw[dotted] (S1A-right) -- (S2A-left);
+        \draw[->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
+        \draw[dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[below right, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} $\to$ {\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
+
+    \end{tikzpicture}
+    }
+    \caption{Example of concurrent update}
+  \end{figure}
+  \vspace{-3mm}
+  \begin{itemize}
+    \item Use \emph{epoch-based} system to track concurrent operations
+    \item Use transform operations against \emph{rename} ones (\emph{OT})
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[standout]
+  What about concurrent \emph{rename} operations ?
+\end{frame}
+
+\begin{frame}{What about concurrent \emph{rename} operations ?}
+  \begin{figure}
+    \centering
+    \resizebox{\columnwidth}{!}{%
+      \begin{tikzpicture}
+        \path
+            node {\textbf{A}}
+            to ++(0:0.5 * \widthletter) node[epoch] {\epoch{0}}
+            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+            to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0A-right) {LO}
+            to ++(0:5 * \widthletter) node[epoch] (S1A-left) {\epoch{A1}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..3}} }
+                        ] (S1A-right) {HELO}
+            to ++(0:8 * \widthletter) node[epoch] (S2A-left) {\epoch{A1}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..1}} }
+                        ] {HE}
+            to ++(0:\widthblock) node[letter, fill=mylightblue,
+                    label={above:{\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}} }
+                        ] {L}
+            to ++(0:\widthletter) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{2..3}} }
+                        ] (S2A-right) {LO};
+
+        \path
+            to ++(270:3) node {\textbf{B}}
+            to ++(0:0.5 * \widthletter) node[epoch] {\epoch{0}}
+            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+            to ++(0:\widthletter) node[block, label=below:{\id{i}{B0}{1..2}}] (S0B-right) {LO}
+            to ++(0:5 * \widthletter) node[epoch] (S1B-left) {\epoch{0}}
+            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+            to ++(0:\widthletter) node[letter, fill=mylightorange, label=below:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}] {L}
+            to ++(0:\widthletter) node[block, label=above:{\id{i}{B0}{1..2}}] (S1B-right) {LO}
+            to ++(0:5 * \widthletter) node[epoch] (S2B-left) {\epoch{B2}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkpurple,
+                    label={ [] below:{\color{mydarkpurpleid}\id{i}{B2}{0..4}} }
+                ] (S2B-right) {HELLO};
+
+        \draw[->, thick] (S0A-right) -- node[above, align=center]{\emph{rename to \epoch{A1}}} (S1A-left);
+        \draw[dotted] (S1A-right) -- (S2A-left); % (S2A-right) -- (A-sync) (S2B-right) -- (B-sync);
+        \draw[->, thick] (S0B-right) -- node[below, align=center]{\emph{insert "L"}\\\emph{between}\\\emph{"E" and "L"}} (S1B-left);
+        \draw[dashed, ->, thick, shorten >= 3] (S1B-right.east) -- node[right, xshift=5pt, align=center]{\emph{insert "L" at} {\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}} $\to$ {\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}}} (S2A-left.west);
+        \draw[->, thick] (S1B-right) -- node[below, align=center]{\emph{rename to \epoch{B2}}} (S2B-left);
+
+
+    \end{tikzpicture}
+    }
+    \caption{Concurrent \emph{rename} operations leading to divergent states}
+  \end{figure}
+  \vspace{-3mm}
+  \begin{itemize}
+    \item \emph{Rename} operations are system operations
+    \item Can resolve conflict by only applying one of them
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{How to do so ?}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \path
+            node[op] (e0) {\epoch{0}}
+            to ++(270:1.5)
+            to ++(180:0.95) node[op] (eA1) {\epoch{A1}};
+        \path
+            to ++(270:1.5)
+            to ++(0:0.95) node[op] (eB2) {\epoch{B2}};
+
+        \draw[thick, ->] (e0) -- (eA1);
+        \draw[thick, ->] (e0) -- (eB2);
+    \end{tikzpicture}
+    \caption{\emph{Epoch tree} corresponding to previous scenario}
+  \end{figure}
+  \vspace{-3mm}
+  \begin{itemize}
+    \item Define total order on epochs to select target epoch
+    \item Design transformation function to revert \emph{rename} operation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What about concurrent \emph{rename} operations ?}
+  \begin{figure}
+    \centering
+    \resizebox{\columnwidth}{!}{%
+    \begin{tikzpicture}
+        \path
+            node {\textbf{A}}
+            to ++(0:0.5 * \widthletter) node[epoch] (S2A-left) {\epoch{A1}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{0..1}} }
+                        ] {HE}
+            to ++(0:\widthblock) node[letter, fill=mylightblue,
+                    label={above:{\color{mylightblue!20!mydarkblueid}\id{i}{A1}{1}\id{i}{B0}{0}\id{m}{B1}{0}} }
+                        ] {L}
+            to ++(0:\widthletter) node[block, fill=mydarkblue,
+                    label={below:{\color{mydarkblueid}\id{i}{A1}{2..3}} }
+                        ] (S2A-right) {LO}
+            to ++(0:2 * \widthblock) node[point] (between-S2A-S3A) {}
+            to ++(0:3 * \widthletter) node[epoch] (S3A-left) {\epoch{0}}
+            to ++(0:1 * \widthoriginepoch) node[letter, label=below:{\id{i}{B0}{0}}] {H}
+            to ++(0:\widthletter) node[letter, fill=mydarkorange, label=above:{\color{mydarkorange}\id{i}{B0}{0}\id{f}{\,A0}{0}}] {E}
+            to ++(0:\widthletter) node[letter, fill=mylightorange, label=below:{\color{mylightorange}\id{i}{B0}{0}\id{m}{B1}{0}}] {L}
+            to ++(0:\widthletter) node[block, label=above:{\id{i}{B0}{1..2}}] (S3A-right) {LO}
+            to ++ (0:3 * \widthblock) node[epoch] (S4A-left) {\epoch{B2}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkpurple,
+                    label={ [] below:{\color{mydarkpurpleid}\id{i}{B2}{0..4}} }
+                ] {HELLO};
+
+        \path
+            to ++(270:3) node {\textbf{B}}
+            to ++(0:0.5 * \widthletter) node[epoch] (S2B-left) {\epoch{B2}}
+            to ++(0:1.15 * \widthepoch) node[block, fill=mydarkpurple,
+                label={ [] below:{\color{mydarkpurpleid}\id{i}{B2}{0..4}} }
+            ] (S2B-right) {HELLO};
+
+        \draw[dotted] (S2A-right) -- (between-S2A-S3A) (S3A-right) -- (S4A-left);
+        \draw[->, dashed, thick] (S2B-right.east) -- node[right, xshift=5pt, align=center]{\emph{rename to \epoch{B2}}} (between-S2A-S3A);
+        \draw[->, loosely dash dot, thick, shorten >= 1] (between-S2A-S3A) -- node[above, align=center]{\emph{revert to \epoch{0}}} (S3A-left);
+        \draw[->, dashed, thick, shorten >= 3] (between-S2A-S3A) edge[bend right] (S4A-left.west);
+    \end{tikzpicture}
+    }
+    \caption{Concurrent \emph{rename} operations leading to divergent states}
+  \end{figure}
+  \vspace{-3mm}
+  \begin{itemize}
+    \item Revert state to equivalent one at LCA epoch
+    \item Apply then \emph{rename} operations leading to target epoch
   \end{itemize}
 \end{frame}
 
@@ -338,15 +590,11 @@
   \end{block}
 \end{frame}
 
-% \begin{frame}[standout]
-%   What about concurrent \emph{rename} operations ?
-% \end{frame}
-
 \begin{frame}[standout]
   \alert{Evaluation}
 
   \bigskip
-  Ran simulations to compare RenamableLogootSplit performances to LogootSplit ones
+  Ran simulations to compare performance of RenamableLogootSplit to LogootSplit one
 \end{frame}
 
 
@@ -442,7 +690,7 @@
     \vspace{-1mm}
     \begin{itemize}
       \item Designed a \emph{rename} operation for LogootSplit
-      \item Defined transformation functions to deal with concurrent updates
+      \item Compared its performance to one of LogootSplit
     \end{itemize}
   \end{block}
 
@@ -463,6 +711,7 @@
     \begin{itemize}
       \item Prove formally the correctness of the mechanism
       \item Design better strategies to select the target epoch
+      \item Improve performance of \emph{rename} operations
     \end{itemize}
   \end{block}
 \end{frame}
@@ -525,23 +774,6 @@
       \item \dots but overhead still proportional to number of elements
     \end{itemize}
   \end{itemize}
-\end{frame}
-
-\begin{frame}{Handling concurrent \emph{rename}}
-  \begin{center}
-    \emph{The topic of a later contribution}
-  \end{center}
-
-  \begin{block}{\alert{\emph{rename} operation not commutative}}
-  \end{block}
-
-  \begin{block}{To fix this:}
-    \begin{itemize}
-      \item Define a total order between \emph{rename} operations
-      \item Pick a "winner" operation between concurrent \emph{renames}
-      \item Define additional transformation functions to \emph{undo} the effect of "losing" ones
-    \end{itemize}
-  \end{block}
 \end{frame}
 
 \begin{frame}{Perspectives}
